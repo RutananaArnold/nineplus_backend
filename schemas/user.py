@@ -6,3 +6,7 @@ class User(BaseModel):
     phone:Optional[str]
     password:Optional[str]
     
+class Login(BaseModel):
+    email:Optional[str]
+    password:Optional[str]    
+    
