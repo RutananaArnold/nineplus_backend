@@ -7,10 +7,6 @@ import bcrypt
 
 user = APIRouter()
 
-@user.get("/fetch")
-def display():
-    return {"msg": "hello"}
-
 @user.post("/register")
 def registration(user: User):
     # query to check if there is an existing emails
@@ -51,4 +47,11 @@ def login(login: Login):
         return {"status": "Incorrect password"}
     
     return {'status' : 'logged in','data':savedEmail}
+
+@user.get("/userprofile/{id}")
+def getProfile(id: int):
+    userProfile = conn.execute(
+        users.select().where(users.c.id == id)).fetchone()
+    print(userProfile)
+    return userProfile
     
