@@ -1,1 +1,1 @@
-from schemas.user import User, Login
+from schemas.user import User, Login, Post

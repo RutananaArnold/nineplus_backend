@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from schemas.index import User, Login
-from models.index import users
+from schemas.index import User, Login, Post
+from models.index import users, posts
 from config.db import conn
 import bcrypt
 
@@ -55,3 +55,26 @@ def getProfile(id: int):
     print(userProfile)
     return userProfile
     
+@user.post("/addpost/{id}")
+def addpost(post: Post, id:int):
+    result = conn.execute(posts.insert().values(
+        caption=post.caption,
+        owner_id=id,    
+    ))
+    print(result.lastrowid)
+    return {"msg":"Post added succefully", "post_id": result.lastrowid}
+
+@user.get("/fetchpost/{post_id}")
+def getParticularPost(post_id: int):
+    post = conn.execute(
+        posts.select().where(posts.c.id == post_id)).fetchone()
+    print(post)
+    return post
+
+@user.get("/fetchALLposts/{page_number}/{number_of_rows_per_page}")
+def fetchPosts(page_number: int, number_of_rows_per_page: int ):
+    query = posts.select().slice((page_number - 1)*number_of_rows_per_page, ((page_number - 1)*number_of_rows_per_page)+number_of_rows_per_page)
+    current_pages_rows = conn.execute(query).fetchall()
+   
+    print(current_pages_rows)
+    return current_pages_rows

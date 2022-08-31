@@ -8,5 +8,9 @@ class User(BaseModel):
     
 class Login(BaseModel):
     email:Optional[str]
-    password:Optional[str]    
+    password:Optional[str]   
+    
+class Post(BaseModel):
+    caption:Optional[str]
+    owner_id:int 
     
