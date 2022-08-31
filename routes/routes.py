@@ -63,7 +63,6 @@ def addpost(post: Post, id:int):
     ))
     print(result.lastrowid)
     return {"msg":"Post added succefully", "post_id": result.lastrowid}
-
 @user.get("/fetchpost/{post_id}")
 def getParticularPost(post_id: int):
     post = conn.execute(
