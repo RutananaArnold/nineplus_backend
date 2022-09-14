@@ -13,4 +13,5 @@ class Login(BaseModel):
 class Post(BaseModel):
     caption:Optional[str]
     owner_id:int 
+    image_name:Optional[str]
     

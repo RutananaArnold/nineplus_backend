@@ -1,8 +1,10 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, File, UploadFile
 from schemas.index import User, Login, Post
 from models.index import users, posts
 from config.db import conn
 import bcrypt
+import shutil
+from datetime import datetime
 
 
 user = APIRouter()
@@ -56,13 +58,22 @@ def getProfile(id: int):
     return userProfile
     
 @user.post("/addpost/{id}")
-def addpost(post: Post, id:int):
-    result = conn.execute(posts.insert().values(
-        caption=post.caption,
-        owner_id=id,    
-    ))
-    print(result.lastrowid)
+def addpost(post: Post, id:int, file: UploadFile):
+    allowedFiles = {"image/jpeg", "image/png", "image/gif", "image/tiff", "image/bmp", "video/webm"}
+    if file.content_type in allowedFiles:
+        with open(f'uploaded_images/{file.filename}', "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+            encodeFile = datetime.now(),'.',file.content_type 
+                
+            result = conn.execute(posts.insert().values(
+                caption=post.caption,
+                owner_id=id,  
+                image_name=encodeFile
+            ))
+            print(result.lastrowid)
     return {"msg":"Post added succefully", "post_id": result.lastrowid}
+
+
 @user.get("/fetchpost/{post_id}")
 def getParticularPost(post_id: int):
     post = conn.execute(
@@ -77,3 +88,15 @@ def fetchPosts(page_number: int, number_of_rows_per_page: int ):
    
     print(current_pages_rows)
     return current_pages_rows
+
+
+@user.post("/uploadfile/")
+async def pick_upload_file(file: UploadFile):
+    allowedFiles = {"image/jpeg", "image/png", "image/gif", "image/tiff", "image/bmp", "video/webm"}
+    if file.content_type in allowedFiles:
+        with open(f'uploaded_images/{file.filename}', "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+            encodeFile = datetime.now(),file.content_type
+        return {"filename": file.filename, "file-Type": file.content_type, "Given-Name": encodeFile}
+    else:
+        return {"message": "There was an error uploading the file(s)"}

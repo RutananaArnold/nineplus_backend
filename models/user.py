@@ -14,7 +14,8 @@ posts = Table(
     'posts', meta,
     Column('id', Integer, primary_key=True),
     Column('caption', Text),
-    Column('owner_id', Integer, ForeignKey("users.id"))
+    Column('owner_id', Integer, ForeignKey("users.id")),
+    Column('image_name', Text),
 )
 
 meta.create_all(engine)
